@@ -3,7 +3,7 @@ PyPDF2
 python-docx
 pandas
 openpyxl
-whisper
+git+https://github.com/openai/whisper.git
 gTTS
 plotly
 matplotlib
