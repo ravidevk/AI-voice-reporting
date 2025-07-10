@@ -43,7 +43,7 @@ def require_role(allowed_roles):
 
 # Register a new user
 def register_user(username, password, role):
-    st.write(username, password, role)
+    # st.write(username, password, role)
     users = load_users()
 
     # Check for existing username
