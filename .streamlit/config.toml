@@ -1,0 +1,26 @@
+[theme]
+base="dark"
+
+
+#[logger]
+#level = "debug"
+#
+#[client]
+#showErrorDetails = "stacktrace"
+#toolbarMode = "auto"  #developer, viewer, minimal
+#showSidebarNavigation = true
+
+[server]
+
+[theme.sidebar]
+## Primary accent color.
+#primaryColor = "#ff0066"
+## Background color of the app.
+#backgroundColor = "#666699"
+
+[browser]
+serverAddress = "localhost"
+serverPort = 8501
+
+
+

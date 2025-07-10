@@ -23,4 +23,5 @@ google-cloud-texttospeech
 audio-recorder-streamlit
 torch
 chardet
+Authlib
 
