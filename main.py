@@ -105,6 +105,7 @@ if "qa_chain" in st.session_state:
                     <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
                 </audio>
             """, unsafe_allow_html=True)
+        os.remove(tts_path)
 
         # Chart from Excel if applicable
         for df in st.session_state.excel_dfs:
