@@ -2,7 +2,7 @@ import streamlit as st
 from utils.auth import login
 from utils.auth import register_user
 
-st.set_page_config(page_title="Question Bank App", layout="centered", initial_sidebar_state='collapsed')
+st.set_page_config(page_title="Voice Reporting", layout="centered", initial_sidebar_state='collapsed')
 
 if "user" not in st.session_state:
     st.session_state.user = None
