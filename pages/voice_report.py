@@ -26,8 +26,8 @@ if require_role(["admin", "user"]) and st.user.is_logged_in:
 login(token=st.secrets["hf_token"])
 ssl._create_default_https_context = ssl._create_unverified_context
 
-st.set_page_config(page_title="📄 AI Doc Chat", layout="wide")
-st.title("🧠 Conversational Document Assistant")
+st.set_page_config(page_title="📄 AI Doc Chat", layout="centered")
+st.subheader("🧠 Conversational Document Assistant")
 
 
 @st.cache_resource
@@ -55,14 +55,17 @@ embeddings = load_embeddings()
 
 asr_model = load_whisper()
 
-# Upload and extract
-uploaded_files = st.file_uploader("📎 Upload files (PDF, DOCX, XLSX)", type=["pdf", "docx", "xlsx"], accept_multiple_files=True)
 
+# Upload and extract
+uploaded_files = st.file_uploader("📎 Upload files (PDF, DOCX, XLSX)", type=["pdf", "docx", "xlsx", "txt"],
+                                  accept_multiple_files=True)
 if uploaded_files:
     all_text = ""
     excel_dfs = []
     for file in uploaded_files:
         filetype = file.name.split(".")[-1]
+        if filetype == "txt":
+            all_text += file_utils.extract_text_from_textfile(file)
         if filetype == "pdf":
             all_text += file_utils.extract_text_from_pdf(file)
         elif filetype == "docx":
@@ -93,28 +96,33 @@ if "qa_chain" in st.session_state:
         if audio:
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
                 tmp.write(audio.getvalue())
+            with st.spinner("🎧 Transcribing your voice..."):
                 user_query = asr_model.transcribe(tmp.name)["text"]
                 st.info(f"🗣️ You said: {user_query}")
+            if user_query:
+                with st.spinner("💡 Thinking..."):
+                    response = st.session_state.qa_chain.run(user_query)
+                with st.spinner("🔊 Generating speech..."):
+                    # Autoplay voice
+                    tts_path = os.path.join(os.getcwd(), "response.mp3")
+                    gTTS(text=response).save(tts_path)
+                    with open(tts_path, "rb") as f:
+                        audio_bytes = f.read()
+                        b64 = base64.b64encode(audio_bytes).decode()
+                        st.markdown(f"""
+                                        <audio autoplay>
+                                            <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+                                        </audio>
+                                    """, unsafe_allow_html=True)
+                    os.remove(tts_path)
 
     if user_query:
-        st.chat_message("user").markdown(user_query)
-        response = st.session_state.qa_chain.run(user_query)
-        st.chat_message("assistant").markdown(response)
+        with st.spinner("💡 Thinking..."):
+            st.chat_message("user").markdown(user_query)
+            response = st.session_state.qa_chain.run(user_query)
+            formatted_response = response.strip().replace("\n", "  \n")
+            st.chat_message("assistant").markdown(formatted_response)
 
-        # Autoplay voice
-        tts_path = os.path.join(os.getcwd(), "response.mp3")
-        gTTS(text=response).save(tts_path)
-        with open(tts_path, "rb") as f:
-            audio_bytes = f.read()
-            b64 = base64.b64encode(audio_bytes).decode()
-            st.markdown(f"""
-                <audio autoplay>
-                    <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-                </audio>
-            """, unsafe_allow_html=True)
-        os.remove(tts_path)
-
-        # Chart from Excel if applicable
         for df in st.session_state.excel_dfs:
             charts.render_chart_from_query(user_query, df)
 

@@ -23,5 +23,25 @@
         "username": "user1a",
         "password": "user1a",
         "role": "user"
+    },
+    {
+        "username": "user1b",
+        "password": "user1b",
+        "role": "user"
+    },
+    {
+        "username": "user1c",
+        "password": "user1c",
+        "role": "admin"
+    },
+    {
+        "username": "user1d",
+        "password": "yser1d",
+        "role": "user"
+    },
+    {
+        "username": "user1e",
+        "password": "user1e",
+        "role": "admin"
     }
 ]
