@@ -22,6 +22,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 st.set_page_config(page_title="📄 AI Doc Chat", layout="wide")
 st.title("🧠 Conversational Document Assistant")
 
+
 @st.cache_resource
 def load_llm():
     model_id = "google/flan-t5-base"
@@ -30,16 +31,21 @@ def load_llm():
     pipe = pipeline("text2text-generation", model=model, tokenizer=tokenizer)
     return HuggingFacePipeline(pipeline=pipe)
 
+
 @st.cache_resource
 def load_embeddings():
     return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
 
 @st.cache_resource
 def load_whisper():
     return whisper.load_model("base")
 
+
 llm = load_llm()
+
 embeddings = load_embeddings()
+
 asr_model = load_whisper()
 
 # Upload and extract
@@ -89,7 +95,7 @@ if "qa_chain" in st.session_state:
         st.chat_message("assistant").markdown(response)
 
         # Autoplay voice
-        tts_path = "response.mp3"
+        tts_path = os.path.join(os.getcwd(), "response.mp3")
         gTTS(text=response).save(tts_path)
         with open(tts_path, "rb") as f:
             audio_bytes = f.read()
