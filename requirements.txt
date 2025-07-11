@@ -24,4 +24,4 @@ audio-recorder-streamlit
 torch
 chardet
 Authlib
-
+textblob
